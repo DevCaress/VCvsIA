@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vibe Coding vs Ingeniería con IA</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/black.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- 1. Portada -->
+    <section class="cover">
+      <p class="kicker">Charla · Desarrollo de software con IA</p>
+      <h1><span class="vibe">Vibe Coding</span><br><span class="vs">vs</span><br><span class="eng">Ingeniería asistida por IA</span></h1>
+      <p class="muted">Misma herramienta, resultados muy distintos</p>
+      <aside class="notes">Abrir preguntando: ¿cuántos han generado código con IA esta semana? ¿Cuántos lo llevaron a producción?</aside>
+    </section>
+
+    <!-- 2. Vibe coding -->
+    <section>
+      <h2><span class="vibe">Vibe coding</span></h2>
+      <blockquote>“Te entregas por completo a las vibras… y olvidas que el código existe.”<br><small>— Andrej Karpathy, 2025</small></blockquote>
+      <div class="loop">
+        <span>Prompt</span><i>→</i><span>Aceptar todo</span><i>→</i><span>Ejecutar</span><i>→</i><span>¿Falla? Pegar el error</span><i>↺</i>
+      </div>
+      <ul class="fragment">
+        <li>Ideal para prototipos, demos y proyectos de fin de semana</li>
+        <li>Sin revisión, sin pruebas, sin arquitectura</li>
+        <li>Funciona… hasta que deja de funcionar</li>
+      </ul>
+    </section>
+
+    <!-- 3. Ingeniería asistida -->
+    <section>
+      <h2><span class="eng">Ingeniería asistida por IA</span></h2>
+      <p class="lead">La IA es un <strong>colaborador</strong> dentro de un proceso de ingeniería, no un reemplazo del proceso.</p>
+      <div class="loop eng-loop">
+        <span>Especificar</span><i>→</i><span>Dar contexto</span><i>→</i><span>Planear</span><i>→</i><span>Ejecutar</span><i>→</i><span>Verificar</span><i>→</i><span>Revisar</span>
+      </div>
+      <p class="fragment muted">El ingeniero diseña el sistema <em>alrededor</em> del modelo.</p>
+    </section>
+
+    <!-- 4. Comparativa -->
+    <section>
+      <h2>La diferencia en una tabla</h2>
+      <table class="compare">
+        <thead><tr><th></th><th class="vibe">Vibe coding</th><th class="eng">Ingeniería con IA</th></tr></thead>
+        <tbody>
+          <tr class="fragment"><td>Objetivo</td><td>Que “funcione”</td><td>Que sea correcto y mantenible</td></tr>
+          <tr class="fragment"><td>Contexto</td><td>Lo que haya en el chat</td><td>Curado y diseñado</td></tr>
+          <tr class="fragment"><td>Memoria</td><td>Se pierde en cada sesión</td><td>Persistente y versionada</td></tr>
+          <tr class="fragment"><td>Validación</td><td>“Se ve bien”</td><td>Tests, linters, CI</td></tr>
+          <tr class="fragment"><td>Control</td><td>El modelo decide</td><td>Humano en puntos clave</td></tr>
+          <tr class="fragment"><td>Escala</td><td>Un script</td><td>Un equipo, un producto</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. Separador -->
+    <section class="divider" data-background-color="#0f172a">
+      <p class="kicker">Parte 2</p>
+      <h2>Los conceptos detrás de la ingeniería con IA</h2>
+      <div class="chips">
+        <span>Memoria</span><span>Tokens</span><span>Context engineering</span><span>Orquestación</span><span>Harness</span><span>Human-in-the-loop</span>
+      </div>
+    </section>
+
+    <!-- 6. Modelo mental -->
+    <section>
+      <h2>Modelo mental</h2>
+      <div class="grid-3">
+        <div class="card"><h3>LLM</h3><p>El “CPU”: razona, pero no recuerda nada por sí solo</p></div>
+        <div class="card"><h3>Ventana de contexto</h3><p>La “RAM”: todo lo que el modelo ve en este momento</p></div>
+        <div class="card"><h3>Memoria externa</h3><p>El “disco”: archivos, docs, bases de datos</p></div>
+      </div>
+      <p class="fragment lead">Hacer ingeniería con IA = <strong>gestionar qué entra a la RAM</strong>.</p>
+    </section>
+
+    <!-- 7. Memoria corto plazo -->
+    <section>
+      <h2>Memoria de <span class="accent">corto plazo</span></h2>
+      <div class="two-col">
+        <div>
+          <p>Es la <strong>ventana de contexto</strong> de la sesión actual.</p>
+          <ul>
+            <li>Historial de la conversación</li>
+            <li>Archivos leídos, salidas de comandos</li>
+            <li>Tiene un límite (p. ej. 200K – 1M tokens)</li>
+            <li class="fragment">Se degrada: entre más ruido, peor atención (<em>context rot</em>)</li>
+          </ul>
+        </div>
+        <div class="box fragment">
+          <h4>Técnicas</h4>
+          <ul>
+            <li>Compactar / resumir la conversación</li>
+            <li>Sesiones cortas y enfocadas</li>
+            <li>Limpiar el contexto entre tareas</li>
+            <li>Listas de tareas (TODO) dentro de la sesión</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Memoria largo plazo -->
+    <section>
+      <h2>Memoria de <span class="accent">largo plazo</span></h2>
+      <p>Lo que sobrevive entre sesiones y entre personas del equipo.</p>
+      <div class="two-col">
+        <pre><code class="language-markdown" data-trim>
+# CLAUDE.md / AGENTS.md
+## Stack
+- Node 22, TypeScript, PostgreSQL
+## Convenciones
+- Tests con Vitest: `npm test`
+- Nunca editar /migrations a mano
+## Decisiones
+- Auth con JWT (ver ADR-004)
+        </code></pre>
+        <ul>
+          <li>Archivos de instrucciones del proyecto</li>
+          <li>ADRs y documentación versionada</li>
+          <li>Memorias del agente (preferencias, feedback)</li>
+          <li>RAG / búsqueda sobre el código</li>
+          <li class="fragment"><strong>Se versiona en git</strong> como el código</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. Tokens -->
+    <section>
+      <h2>Optimización de <span class="accent">tokens</span></h2>
+      <p class="muted">Tokens = costo + latencia + calidad de atención</p>
+      <div class="grid-2">
+        <div class="card fragment"><h3>Menos es más</h3><p>Leer solo los fragmentos relevantes, no repos enteros</p></div>
+        <div class="card fragment"><h3>Prompt caching</h3><p>Reutilizar prefijos estables (system prompt, docs) a menor costo</p></div>
+        <div class="card fragment"><h3>Subagentes</h3><p>Delegar búsquedas para que el ruido no entre al contexto principal</p></div>
+        <div class="card fragment"><h3>Modelo adecuado</h3><p>Modelos pequeños para tareas simples, grandes para razonar</p></div>
+      </div>
+    </section>
+
+    <!-- 10. Context engineering -->
+    <section>
+      <h2><span class="accent">Context engineering</span></h2>
+      <p class="lead">“Prompt engineering” era escribir buenas frases.<br>Context engineering es <strong>diseñar todo lo que el modelo ve</strong>.</p>
+      <div class="stack">
+        <div class="layer fragment">System prompt e instrucciones</div>
+        <div class="layer fragment">Memoria del proyecto (CLAUDE.md, docs)</div>
+        <div class="layer fragment">Herramientas disponibles (MCP, CLI)</div>
+        <div class="layer fragment">Archivos y datos relevantes</div>
+        <div class="layer fragment">Historial y resultados de herramientas</div>
+        <div class="layer task fragment">La tarea concreta</div>
+      </div>
+    </section>
+
+    <!-- 11. Orquestación -->
+    <section>
+      <h2>Orquestación de <span class="accent">agentes</span></h2>
+      <div class="orch">
+        <div class="node main">Agente orquestador<small>planea y coordina</small></div>
+        <div class="branches">
+          <div class="node fragment">Explorador<small>busca en el código</small></div>
+          <div class="node fragment">Implementador<small>escribe cambios</small></div>
+          <div class="node fragment">Tester<small>corre pruebas</small></div>
+          <div class="node fragment">Revisor<small>hace code review</small></div>
+        </div>
+      </div>
+      <p class="fragment muted">Cada agente con su propio contexto limpio → paralelismo y especialización.</p>
+    </section>
+
+    <!-- 12. Harness -->
+    <section>
+      <h2>El <span class="accent">harness</span></h2>
+      <p class="lead">Todo lo que rodea al modelo y lo convierte en un agente útil.</p>
+      <div class="harness">
+        <div class="core">LLM</div>
+        <span class="h-item h1">Herramientas</span>
+        <span class="h-item h2">Permisos</span>
+        <span class="h-item h3">Hooks</span>
+        <span class="h-item h4">Sandbox</span>
+        <span class="h-item h5">Skills</span>
+        <span class="h-item h6">Loop agente</span>
+      </div>
+      <p class="fragment muted">El mismo modelo rinde muy distinto según el harness.</p>
+      <aside class="notes">
+        El Agent SDK no es un harness para abrir y programar: es la librería para construir uno.
+        Los que la gente abre todos los días están en la diapositiva siguiente.
+      </aside>
+    </section>
+
+    <!-- 12b. Harness populares -->
+    <section>
+      <h2>Harness que usa la gente</h2>
+      <table class="compare flows">
+        <thead>
+          <tr><th>Harness</th><th>Qué aporta</th><th>Herramienta</th></tr>
+        </thead>
+        <tbody>
+          <tr class="fragment">
+            <td>Claude Code</td>
+            <td>El de Anthropic. Skills, hooks, permisos y subagentes, en la terminal y en el editor.</td>
+            <td><a href="https://code.claude.com/docs" target="_blank" rel="noopener">code.claude.com</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Codex</td>
+            <td>El de OpenAI. CLI abierta, con sandbox y aprobación por acción.</td>
+            <td><a href="https://github.com/openai/codex" target="_blank" rel="noopener">openai/codex</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>OpenCode</td>
+            <td>Abierto y sin modelo fijo. El que se recomienda para no quedar atado a un proveedor.</td>
+            <td><a href="https://github.com/anomalyco/opencode" target="_blank" rel="noopener">opencode</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Pi</td>
+            <td>Mínimo a propósito. Pocas herramientas; el resto entra como extensiones y skills.</td>
+            <td><a href="https://pi.dev" target="_blank" rel="noopener">pi.dev</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Gentle Shell</td>
+            <td>El de Gentleman, sobre Pi. Memoria, ODD y varios agentes en la misma terminal.</td>
+            <td><a href="https://github.com/Gentleman-Programming/gentle-shell" target="_blank" rel="noopener">gentle-shell</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Cursor</td>
+            <td>El editor. Reglas, agentes y el diff al lado del código.</td>
+            <td><a href="https://cursor.com" target="_blank" rel="noopener">cursor.com</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Copilot</td>
+            <td>El de GitHub. Agente en el IDE y en la CLI, pegado al repo y al pull request.</td>
+            <td><a href="https://github.com/features/copilot" target="_blank" rel="noopener">Copilot</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Cline</td>
+            <td>Agente abierto dentro del editor, con el modelo que elijas.</td>
+            <td><a href="https://github.com/cline/cline" target="_blank" rel="noopener">cline</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <aside class="notes">
+        gentle-ai no es un harness. Configura los que ya tenés: Claude Code, Cursor, OpenCode, Codex, Pi y otros. Gentle Shell sí es el harness propio de Gentleman, construido sobre Pi, y el instalador le adjunta Engram y gentle-ai.
+        Pi, de Mario Zechner y ahora Earendil, es el harness mínimo que la comunidad usa de base. Gentle Shell es un ejemplo de "hacerlo tuyo".
+        En los rankings de 2026 el primer grupo es Claude Code y Codex. OpenCode es el abierto que más se recomienda para cambiar de modelo. Cursor y Copilot siguen siendo los del editor. Cline es la alternativa abierta dentro del IDE.
+        Devin, Goose y Hermes también circulan. Quedaron afuera para no mezclar agentes de propósito general con los de programar.
+      </aside>
+    </section>
+
+    <!-- 13. HITL -->
+    <section>
+      <h2><span class="accent">Human-in-the-loop</span></h2>
+      <p>La IA acelera; el humano <strong>decide y es responsable</strong>.</p>
+      <div class="timeline">
+        <div class="step"><b>1</b>Aprobar el plan</div>
+        <div class="step"><b>2</b>Autorizar acciones riesgosas</div>
+        <div class="step"><b>3</b>Revisar el diff</div>
+        <div class="step"><b>4</b>Validar en CI / staging</div>
+        <div class="step"><b>5</b>Merge y deploy</div>
+      </div>
+      <p class="fragment muted">Más autonomía donde el riesgo es bajo, más control donde es alto.</p>
+    </section>
+
+    <!-- 14. Todo junto -->
+    <section>
+      <h2>Todo junto: un flujo real</h2>
+      <ol class="flow">
+        <li class="fragment"><span class="tag">Memoria</span> El agente carga <code>CLAUDE.md</code> con las reglas del repo</li>
+        <li class="fragment"><span class="tag">Contexto</span> Recibe un ticket claro + archivos relevantes</li>
+        <li class="fragment"><span class="tag">Orquestación</span> Un subagente explora, otro propone un plan</li>
+        <li class="fragment"><span class="tag">HITL</span> El ingeniero aprueba el plan</li>
+        <li class="fragment"><span class="tag">Harness</span> Implementa; hooks corren lint y tests</li>
+        <li class="fragment"><span class="tag">Tokens</span> Compacta el contexto y sigue con la siguiente tarea</li>
+        <li class="fragment"><span class="tag">HITL</span> PR → code review humano → merge</li>
+      </ol>
+    </section>
+
+    <!-- 15. Separador flujos -->
+    <section class="divider" data-background-color="#0f172a">
+      <p class="kicker">Parte 3</p>
+      <h2>Flujos para trabajar con IA</h2>
+      <p class="lead">La ingeniería asistida, empaquetada. Misma idea: intención antes que código.</p>
+      <div class="chips">
+        <span>SDD</span><span>ODD</span><span>OpenSpec</span><span>BMAD</span><span>GSD</span><span>Kiro</span><span>Task Master</span>
+      </div>
+      <aside class="notes">
+        Estos nombres circulan porque el proceso ya no cabe en un prompt.
+        SDD es el de referencia. ODD es el de Gentleman, y en gentle-ai reemplazó a su SDD.
+        El resto cambia cuánta ceremonia hay y quién la decide.
+      </aside>
+    </section>
+
+    <!-- 16. Los flujos -->
+    <section>
+      <h2>Las que más se repiten</h2>
+      <table class="compare flows">
+        <thead>
+          <tr><th>Flujo</th><th>Qué hace</th><th>Herramienta</th></tr>
+        </thead>
+        <tbody>
+          <tr class="fragment">
+            <td>SDD</td>
+            <td>Specify, plan, tasks, implement y converge. La spec manda: cada artefacto se aprueba antes de seguir.</td>
+            <td><a href="https://github.com/github/spec-kit" target="_blank" rel="noopener">Spec Kit</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>ODD</td>
+            <td>Explorar, clasificar y codear con tests. Si el cambio se retoma con el diff, no hay documento. Si no, uno solo.</td>
+            <td><a href="https://github.com/Gentleman-Programming/gentle-ai" target="_blank" rel="noopener">gentle-ai</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>OpenSpec</td>
+            <td>Proponer el cambio, aplicarlo y archivarlo en las specs vivas del repo. Más liviano, pensado para código que ya existe.</td>
+            <td><a href="https://github.com/Fission-AI/OpenSpec" target="_blank" rel="noopener">OpenSpec</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>BMAD</td>
+            <td>Aclarar, planear, construir y verificar con roles: analista, PM, arquitecto, dev y QA. El proceso crece con el cambio.</td>
+            <td><a href="https://github.com/bmad-code-org/BMAD-METHOD" target="_blank" rel="noopener">BMAD-METHOD</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>GSD</td>
+            <td>Preguntar hasta cerrar la idea, planear por fases y ejecutar cada fase en una ventana de contexto nueva.</td>
+            <td><a href="https://github.com/gsd-build/get-shit-done" target="_blank" rel="noopener">get-shit-done</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Kiro</td>
+            <td>Requirements, design y tasks como archivos del proyecto. No se codea hasta aprobar la fase.</td>
+            <td><a href="https://kiro.dev/docs/specs/" target="_blank" rel="noopener">kiro.dev</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Task Master</td>
+            <td>Parte un PRD en tareas con dependencias. El agente las cierra en orden.</td>
+            <td><a href="https://github.com/eyaltoledano/claude-task-master" target="_blank" rel="noopener">Task Master</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <aside class="notes">
+        SDD: GitHub Spec Kit. Una constitución de principios por repo, y por feature specify, plan, tasks, implement, converge. Hay pasos opcionales de clarify, checklist y analyze.
+        ODD: Organic Driven Development, de Gentleman Programming. Desde gentle-ai 4 el SDD salió del producto y ODD es el único flujo. Autoriza, explora, clasifica por riesgo y por si se puede retomar mañana solo con el diff. Tarea grande: un markdown en odd/tasks, copiado a Engram. Tests primero cuando hay un test que correr.
+        OpenSpec: Fission-AI. Cada cambio vive en su carpeta (propuesta, specs, diseño, tareas) y al cerrar se archiva. Gentleman se inspiró en esto para su SDD anterior.
+        BMAD: varios agentes con rol, para que planear y revisar no compartan el contexto de quien escribe.
+        GSD: el problema que ataca es el context rot. Si el repo ya existe, primero mapea el código.
+        Kiro: el IDE de AWS. Los tres archivos son requirements.md, design.md y tasks.md. Quick Spec salta las compuertas de aprobación.
+        Task Master no es un ciclo de vida completo: es la capa que convierte un PRD en tareas ordenadas. Encaja dentro de SDD, no lo reemplaza.
+      </aside>
+    </section>
+
+    <!-- 17. Cómo elegir -->
+    <section>
+      <h2>Cómo elegir</h2>
+      <div class="grid-3">
+        <div class="card fragment">
+          <h3>Siempre la misma ceremonia</h3>
+          <p>SDD, OpenSpec, Kiro. Cuando el cambio lo va a leer otra persona, o equivocarse sale caro.</p>
+        </div>
+        <div class="card fragment">
+          <h3>Ceremonia según el cambio</h3>
+          <p>ODD y GSD. Lo chico no abre un expediente. Lo grande deja algo con lo que retomar mañana.</p>
+        </div>
+        <div class="card fragment">
+          <h3>Varios roles</h3>
+          <p>BMAD. Planear, diseñar y revisar en contextos separados, como un equipo chico.</p>
+        </div>
+      </div>
+      <p class="fragment muted">Se instalan sobre el agente que ya usas. Kiro es la excepción: el flujo vive en su IDE.</p>
+      <aside class="notes">
+        Cerrar la parte preguntando con qué están trabajando hoy. La respuesta casi siempre es "con el chat".
+        El punto no es adoptar todos: es tener un flujo escrito, con un punto donde el humano dice que sí.
+      </aside>
+    </section>
+
+    <!-- 18. Cuándo usar cada uno -->
+    <section>
+      <h2>¿Entonces vibe coding es malo?</h2>
+      <div class="grid-2">
+        <div class="card vibe-card"><h3>Vibe coding sí</h3><ul><li>Prototipos y pruebas de concepto</li><li>Scripts desechables</li><li>Aprender y explorar</li></ul></div>
+        <div class="card eng-card"><h3>Ingeniería sí o sí</h3><ul><li>Código en producción</li><li>Trabajo en equipo</li><li>Seguridad, datos, dinero</li></ul></div>
+      </div>
+      <p class="fragment lead">No es la herramienta, es el <strong>proceso</strong>.</p>
+    </section>
+
+    <!-- 16. Cierre -->
+    <section class="cover">
+      <h2>Ideas para llevarse</h2>
+      <ul class="takeaways">
+        <li class="fragment">El contexto es el nuevo código: <strong>diséñalo</strong></li>
+        <li class="fragment">La memoria del proyecto se <strong>versiona</strong></li>
+        <li class="fragment">Los tokens son un <strong>recurso</strong>, no infinitos</li>
+        <li class="fragment">El harness y los agentes son <strong>tu infraestructura</strong></li>
+        <li class="fragment">El flujo se elige según el <strong>tamaño y el riesgo</strong></li>
+        <li class="fragment">El humano sigue siendo <strong>responsable</strong></li>
+      </ul>
+      <p class="fragment kicker">¡Gracias! · ¿Preguntas?</p>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
