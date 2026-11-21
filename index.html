@@ -72,8 +72,25 @@
       <p class="kicker">Parte 2</p>
       <h2>Los conceptos detrás de la ingeniería con IA</h2>
       <div class="chips">
-        <span>Memoria</span><span>Tokens</span><span>Context engineering</span><span>Orquestación</span><span>Harness</span><span>Human-in-the-loop</span>
+        <span>Context engineering</span><span>Memoria</span><span>Tokens</span><span>Orquestación</span><span>Harness</span><span>Human-in-the-loop</span>
       </div>
+    </section>
+
+    <!-- 5b. Conceptos básicos -->
+    <section>
+      <h2>Conceptos <span class="accent">básicos</span></h2>
+      <div class="grid-2">
+        <div class="card fragment"><h3>Agente</h3><p>Un LLM en un ciclo: usa herramientas (leer, editar, ejecutar), mira el resultado y repite hasta terminar</p></div>
+        <div class="card fragment"><h3>Subagente</h3><p>Un agente que lanza otro agente para una tarea acotada. Usa su propio contexto y devuelve solo el resultado</p></div>
+        <div class="card fragment"><h3>Skill</h3><p>Instrucciones empaquetadas (un <code>SKILL.md</code> y scripts) que el agente carga solo cuando la tarea lo pide</p></div>
+        <div class="card fragment"><h3>MCP</h3><p>Model Context Protocol: un estándar para conectar el agente a herramientas y datos externos (GitHub, BD, Figma)</p></div>
+      </div>
+      <aside class="notes">
+        Agente: la diferencia con un chat es el ciclo. El chat responde una vez; el agente actúa, ve qué pasó y sigue.
+        Subagente: sirve para que la búsqueda o la exploración no llenen el contexto del agente principal. Vuelve en orquestación.
+        Skill: se carga bajo demanda, así no ocupa tokens mientras no se usa. Es conocimiento, no conexión.
+        MCP: lo comparan con un USB-C para la IA. Escribes el servidor una vez y lo usa cualquier agente compatible. Es conexión, no conocimiento.
+      </aside>
     </section>
 
     <!-- 6. Modelo mental -->
@@ -85,6 +102,20 @@
         <div class="card"><h3>Memoria externa</h3><p>El “disco”: archivos, docs, bases de datos</p></div>
       </div>
       <p class="fragment lead">Hacer ingeniería con IA = <strong>gestionar qué entra a la RAM</strong>.</p>
+    </section>
+
+    <!-- 7. Context engineering -->
+    <section>
+      <h2><span class="accent">Context engineering</span></h2>
+      <p class="lead">“Prompt engineering” era escribir buenas frases.<br>Context engineering es <strong>diseñar todo lo que el modelo ve</strong>.</p>
+      <div class="stack">
+        <div class="layer fragment">System prompt e instrucciones</div>
+        <div class="layer fragment">Memoria del proyecto (CLAUDE.md, docs)</div>
+        <div class="layer fragment">Herramientas disponibles (MCP, CLI)</div>
+        <div class="layer fragment">Archivos y datos relevantes</div>
+        <div class="layer fragment">Historial y resultados de herramientas</div>
+        <div class="layer task fragment">La tarea concreta</div>
+      </div>
     </section>
 
     <!-- 7. Memoria corto plazo -->
@@ -135,6 +166,64 @@
           <li class="fragment"><strong>Se versiona en git</strong> como el código</li>
         </ul>
       </div>
+      <aside class="notes">
+        ADR = Architecture Decision Record. Un markdown corto por decisión: el contexto, lo que se decidió, por qué y qué consecuencias tiene. Se numeran (ADR-004) y no se borran: si la decisión cambia, se escribe otro que reemplaza al anterior.
+        Para el agente vale oro: en vez de proponer otra vez lo que el equipo ya descartó, lee el ADR y entiende por qué se hizo así.
+      </aside>
+    </section>
+
+    <!-- 8b. Persistencia -->
+    <section>
+      <h2>Proyectos de <span class="accent">persistencia</span></h2>
+      <p class="muted">Plugins, MCP y repos. Se instalan sobre el harness que ya usas.</p>
+      <table class="compare flows">
+        <thead>
+          <tr><th>Proyecto</th><th>Qué guarda</th><th>Repo</th></tr>
+        </thead>
+        <tbody>
+          <tr class="fragment">
+            <td>Engram</td>
+            <td>El agente elige qué recordar. Un binario, SQLite, cualquier MCP. Se exporta a git.</td>
+            <td><a href="https://github.com/Gentleman-Programming/engram" target="_blank" rel="noopener">engram</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>claude-mem</td>
+            <td>Graba la sesión y la comprime. La siguiente arranca con un índice de lo que importa.</td>
+            <td><a href="https://github.com/thedotmack/claude-mem" target="_blank" rel="noopener">claude-mem</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Basic Memory</td>
+            <td>Notas en Markdown. Las lees, las editas, y el agente escribe en los mismos archivos.</td>
+            <td><a href="https://github.com/basicmachines-co/basic-memory" target="_blank" rel="noopener">basic-memory</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Memory MCP</td>
+            <td>Grafo local de entidades. El servidor de referencia del protocolo, en un JSON.</td>
+            <td><a href="https://github.com/modelcontextprotocol/servers/tree/main/src/memory" target="_blank" rel="noopener">server-memory</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Mem0</td>
+            <td>Hechos extraídos de la conversación. Es la memoria de los usuarios de un producto.</td>
+            <td><a href="https://github.com/mem0ai/mem0" target="_blank" rel="noopener">mem0</a></td>
+          </tr>
+          <tr class="fragment">
+            <td>Graphiti</td>
+            <td>Hechos con vigencia. Lo que dejó de ser cierto se invalida, y queda la historia.</td>
+            <td><a href="https://github.com/getzep/graphiti" target="_blank" rel="noopener">graphiti</a></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="fragment muted">Los cuatro primeros acompañan a quien programa. Mem0 y Graphiti viven dentro del producto.</p>
+      <aside class="notes">
+        La diapositiva anterior es el concepto: CLAUDE.md, ADRs, memorias del agente, RAG. Esta es la caja de herramientas.
+        Para quien programa, el eje es quién decide qué se guarda.
+        Engram, de Gentleman, deja que el agente cure: guarda un bugfix o una decisión, no cada tool call. Un binario Go, SQLite con FTS5, sin embeddings ni API key. Habla con Claude Code, Cursor, Codex, OpenCode, Pi y el resto por MCP. engram sync exporta a .engram/ para commitearlo. Es la memoria que gentle-ai le adjunta a Gentle Shell, y se inspiró en claude-mem.
+        claude-mem graba la sesión con hooks y un worker la comprime. Más recuerdo, más procesos. Hoy habla con varios agentes, no solo Claude Code. Apache-2.0.
+        Basic Memory deja la fuente en Markdown. Si el equipo no puede leer la memoria, no es documentación.
+        Memory MCP es el servidor de referencia: entidades y relaciones en un JSONL. Sirve para mostrar el protocolo.
+        Mem0 y Graphiti no son para tu repo. Mem0 extrae hechos de los usuarios del producto. Graphiti, el motor abierto de Zep, guarda desde cuándo un hecho es cierto y cuándo dejó de serlo.
+        Si preguntan por más: Letta, antes MemGPT, es el agente que reescribe su propia memoria. mcp-memory-service hace búsqueda semántica local, sin API key, y también olvida. No hace falta instalarlos todos. El criterio sigue siendo el de arriba: si se puede revisar y versionar, es ingeniería.
+      </aside>
     </section>
 
     <!-- 9. Tokens -->
@@ -146,20 +235,6 @@
         <div class="card fragment"><h3>Prompt caching</h3><p>Reutilizar prefijos estables (system prompt, docs) a menor costo</p></div>
         <div class="card fragment"><h3>Subagentes</h3><p>Delegar búsquedas para que el ruido no entre al contexto principal</p></div>
         <div class="card fragment"><h3>Modelo adecuado</h3><p>Modelos pequeños para tareas simples, grandes para razonar</p></div>
-      </div>
-    </section>
-
-    <!-- 10. Context engineering -->
-    <section>
-      <h2><span class="accent">Context engineering</span></h2>
-      <p class="lead">“Prompt engineering” era escribir buenas frases.<br>Context engineering es <strong>diseñar todo lo que el modelo ve</strong>.</p>
-      <div class="stack">
-        <div class="layer fragment">System prompt e instrucciones</div>
-        <div class="layer fragment">Memoria del proyecto (CLAUDE.md, docs)</div>
-        <div class="layer fragment">Herramientas disponibles (MCP, CLI)</div>
-        <div class="layer fragment">Archivos y datos relevantes</div>
-        <div class="layer fragment">Historial y resultados de herramientas</div>
-        <div class="layer task fragment">La tarea concreta</div>
       </div>
     </section>
 
